@@ -1,3 +1,7 @@
+class cell{
+  
+}
+
 class player {
   constructor(col, row, ctx, imgStr) {
     var img = new Image();
@@ -16,6 +20,18 @@ class player {
   }
   draw() {
     this.ctx.drawImage(this.img, this.col, this.row, 30, 30);
+    console.log("draw:row", this.row, "col:", this.col);
+    if (this.col<50 && this.row<50)
+    {
+      alert("du hast gewonnen")
+    }
+  }
+  canMove(chance) {
+    console.log("row", this.row, "col:", this.col, chance);
+    if (this.row < 50 && this.col - 50 * chance < 0) {
+      //alert("cant move");
+      return false;
+    } else return true;
   }
 
   move() {
@@ -33,10 +49,14 @@ class player {
         this.direction = "R";
       }
     }
-
     this.draw();
   }
-  
+  checkWin(){
+    if (this.col<50 && this.row<50)
+    {
+      return true
+    }
+  }
 }
 
 var drawGrid = function (w, h, ctx) {
@@ -70,8 +90,6 @@ class dice {
   setDice() {
     this.chance = Math.floor(Math.random() * 6 + 1);
     return this.chance;
-    //console.log(this.chance);
-    //console.log("************");
   }
   drawDice() {
     this.ctx.drawImage(this.img, 0, 0, 40, 40);
@@ -84,15 +102,16 @@ window.addEventListener("DOMContentLoaded", () => {
   let player1 = new player(8, 459, ctx, "playerBlue.png");
   document.getElementById("btn").addEventListener("click", () => {
     const dice1 = new dice();
-    timeMove=dice1.setDice()
-    document.getElementById("lbld").innerHTML = timeMove;
-    for(let i= 1;i<=timeMove;i++)
-    {
+    MoveSteps = dice1.setDice();
+    document.getElementById("lbld").innerHTML = MoveSteps;
+    if (player1.canMove(MoveSteps))
+      for (let i = 1; i <= MoveSteps; i++) {
         player1.move();
-    }
+      }
+     if (player1.checkWin())
+     {
+       alert("*******DU HAST GEWONNEN*******")
+     }
   });
-  
- 
-
 
 });
