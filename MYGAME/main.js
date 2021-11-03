@@ -1,12 +1,13 @@
 import { tunnels } from "./dataOfCells.js";
 class GAME {}
 class player {
-  constructor(col, row, ctx, imgStr) {
+  constructor(col, row, ctx, imgStr,clr) {
     this.ctx = ctx;
     this.col = col;
     this.row = row;
     this.direction = "R";
     this.status = "notInPlay";
+    this.type=clr;
     //status:notInPlay/waiting/playing
   }
   draw() {
@@ -135,39 +136,56 @@ window.addEventListener("DOMContentLoaded", () => {
   drawGrid(500, 500, ctx);
   const dice1 = new dice();
   let MoveSteps = 0;
-  let playerB = new player(8, 459, ctx, "playerx.png");
-  let playerR = new player(8, 459, ctx, "playerx.png");
+  let players=[]
+  //  player[0] = new player(8, 459, ctx, "playerx.png");
+  //  player[1] = new player(8, 459, ctx, "playerx.png");
+  //  player[2] = new player(8, 459, ctx, "playerx.png");
+  //  player[3] = new player(8, 459, ctx, "playerx.png");
+
   document.getElementById("playerBc").addEventListener("click", () => {
-    playerB = new player(8, 459, ctx, "playerBlue.png");
-    playerB.choose("playerB");
+   let x=new player(8, 459, ctx, "playerB.png","playerB")
+    x.choose("playerB");
+    players.push(x)
   });
+  document.getElementById("playerYc").addEventListener("click", () => {
+    let x=new player(8, 459, ctx, "playerY.png","playerY")
+    x.choose("playerY");
+    players.push(x)  
+  });
+  function getPlayer(){
+     let x =players.shift();
+     players.push(x);
+     return(x)
+
+  }
     document.getElementById("btn").addEventListener("click", () => {
+      let currentPlayer=getPlayer(); 
       MoveSteps = dice1.setDice();
-      if (playerB.status == "playing") {
-        document.getElementById("lbld").innerHTML = MoveSteps;
-        if (playerB.canMove(MoveSteps)) {
+      if (currentPlayer.status == "playing") {
+        document.getElementById("lbld").innerHTML = MoveSteps+currentPlayer.type;
+        if (currentPlayer.canMove(MoveSteps)) {
           for (let i = 1; i <= MoveSteps; i++) {
-            playerB.move();
+            currentPlayer.move();
           }
         }
-        playerB.moveTunel();
+        currentPlayer.moveTunel();
         drawGrid(500, 500, ctx);
-        playerB.draw();
-        if (playerB.checkWin()) {
-          alert("playerB**DU HAST GEWONNEN**");
+       players.forEach(p=>p.draw())
+        //currentPlayer.draw();
+        if (currentPlayer.checkWin()) {
+          alert(`player${currentPlayer.type}**DU HAST GEWONNEN`);
         }
-      } else if (MoveSteps != 6 && playerB.status == "waiting") {
-        document.getElementById("lbld").innerHTML = "GEDULD SEIN , You have " + MoveSteps ;
-      } else if (MoveSteps == 6 && playerB.status == "waiting") {
-        document.getElementById("lbld").innerHTML = "Congarajulation !!!, You have !!start " + MoveSteps ;
-        playerB.start("playerBlue.png","playerB");
+      } else if (MoveSteps != 6 && currentPlayer.status == "waiting") {
+        document.getElementById("lbld").innerHTML = "GEDULD SEIN , You have " + MoveSteps+ MoveSteps+currentPlayer.type;
+      } else if (MoveSteps == 6 && currentPlayer.status == "waiting") {
+        document.getElementById("lbld").innerHTML = "Congarajulation !!!, You have !!start " + MoveSteps+currentPlayer.type;
+        currentPlayer.start(currentPlayer.type+".png",currentPlayer.type);
       }
     });
     
   
-  document.getElementById("playerYc").addEventListener("click", () => {
-    //start("playerY")
-  });
+  
+
   document.getElementById("playerGc").addEventListener("click", () => {
     // start("playerG")
   });
