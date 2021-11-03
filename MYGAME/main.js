@@ -1,20 +1,13 @@
-//require("./dataOfCells");
 import { tunnels } from "./dataOfCells.js";
+class GAME {}
 class player {
   constructor(col, row, ctx, imgStr) {
-    var img = new Image();
-    img.style.display = "none";
-    img.src = imgStr;
-    this.img = img;
-    document.body.appendChild(img);
-    img.onload = () => {
-      this.img = img;
-      this.draw();
-    };
     this.ctx = ctx;
     this.col = col;
     this.row = row;
     this.direction = "R";
+    this.status = "notInPlay";
+    //status:notInPlay/waiting/playing
   }
   draw() {
     this.ctx.drawImage(this.img, this.col, this.row, 30, 30);
@@ -78,6 +71,24 @@ class player {
       }
     }
   }
+  choose(p) {
+    document.getElementById(p + "c").setAttribute("style", "display: none;");
+    document.getElementById(p).setAttribute("style", "display: compact;");
+    this.status = "waiting";
+  }
+  start(imgPlayer,p) {
+    document.getElementById(p).setAttribute("style", "display: none;");
+    var img = new Image();
+    img.style.display = "none";
+    img.src = imgPlayer;
+    this.img = img;
+    document.body.appendChild(img);
+    img.onload = () => {
+      this.img = img;
+      this.draw();
+      this.status = "playing";
+    };
+  }
 }
 
 var drawGrid = function (w, h, ctx) {
@@ -106,8 +117,8 @@ class dice {
     this.img = img;
     document.body.appendChild(img);
     img.onload = () => {
-    this.img = img;
-    this.drawDice();
+      this.img = img;
+      this.drawDice();
     };
   }
   setDice() {
@@ -119,28 +130,45 @@ class dice {
   }
 }
 // run codes when document loaded
-  window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => {
   const ctx = document.getElementById("myCanvas").getContext("2d");
   drawGrid(500, 500, ctx);
-  let player1 = new player(8, 459, ctx, "playerBlue.png");
-  document.getElementById("btn").addEventListener("click", () => {
-    const dice1 = new dice();
-    let MoveSteps = dice1.setDice();
-    //*************/
-    //let MoveSteps = document.getElementById("INPUT").value;
-    //*********** */
-    document.getElementById("lbld").innerHTML = MoveSteps;
-    if (player1.canMove(MoveSteps)) {
-      for (let i = 1; i <= MoveSteps; i++) {
-        player1.move();
-      }
-    }
-    player1.moveTunel();
-    drawGrid(500, 500, ctx);
-    player1.draw();
-    if (player1.checkWin()) {
-      alert("player1*******DU HAST GEWONNEN*******");
-    }
+  const dice1 = new dice();
+  let MoveSteps = 0;
+  let playerB = new player(8, 459, ctx, "playerx.png");
+  let playerR = new player(8, 459, ctx, "playerx.png");
+  document.getElementById("playerBc").addEventListener("click", () => {
+    playerB = new player(8, 459, ctx, "playerBlue.png");
+    playerB.choose("playerB");
   });
-  document.getElementById("btn2").addEventListener("click", () => {});
+    document.getElementById("btn").addEventListener("click", () => {
+      MoveSteps = dice1.setDice();
+      if (playerB.status == "playing") {
+        document.getElementById("lbld").innerHTML = MoveSteps;
+        if (playerB.canMove(MoveSteps)) {
+          for (let i = 1; i <= MoveSteps; i++) {
+            playerB.move();
+          }
+        }
+        playerB.moveTunel();
+        drawGrid(500, 500, ctx);
+        playerB.draw();
+        if (playerB.checkWin()) {
+          alert("playerB**DU HAST GEWONNEN**");
+        }
+      } else if (MoveSteps != 6 && playerB.status == "waiting") {
+        document.getElementById("lbld").innerHTML = "GEDULD SEIN , You have " + MoveSteps ;
+      } else if (MoveSteps == 6 && playerB.status == "waiting") {
+        document.getElementById("lbld").innerHTML = "Congarajulation !!!, You have !!start " + MoveSteps ;
+        playerB.start("playerBlue.png","playerB");
+      }
+    });
+    
+  
+  document.getElementById("playerYc").addEventListener("click", () => {
+    //start("playerY")
+  });
+  document.getElementById("playerGc").addEventListener("click", () => {
+    // start("playerG")
+  });
 });

@@ -1,0 +1,20 @@
+.newGame {
+  width: 200;
+  margin-top: 10px;
+  background-color: cyan;
+  font-size: x-large;
+  font-family: fantasy;
+  word-wrap: break-word;
+}
+#btn {
+  font-size: x-large;
+  font-family: fantasy;
+}
+
+.clsImg {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: x-large;
+}

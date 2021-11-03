@@ -5,22 +5,46 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+    <title>Snake and Ladders</title>
 </head>
 <script src="main.js" type="module"></script>
 <script src="dataOfCells.js" type="module"></script>
-<canvas id="myCanvas" style="border:1px solid #d3d3d3;">
-    Your browser does not support the HTML5 canvas tag.
-</canvas>
+<div class="clsImg">
+    <div>
+        <canvas id="myCanvas" style="border:1px solid #d3d3d3;">
+            Your browser does not support the HTML5 canvas tag.
+        </canvas>
 
-<canvas id="diceCanvas" width="50" height="50" style="border: none;">
-    Your browser does not support the HTML5 canvas tag.
-</canvas>
-<label id="lbld"> ???? </label>
-<button id="btn">Move</button>
-<button id="btn2">newPlayer</button>
-<input type="text" id="INPUT">
-<img id="snakeundladder" src='./snakeundladder.jpg' style="display: none;">
-</body>
+        <section class="users">
+            <label id="lblNplayer"> Waiting players:</label>
+            <img id="playerB" src='./playerBlue.png' height="20px" style="display: none;">
+            <img id="playerR" src='./playerR.png' height="20px" style="display: none;">
+            <img id="playerG" src='./playerG.png' height="20px" style="display: none;">
+            <img id="playerY" src='./playerY.png' height="20px" style="display: none;">
+        </section>
+        <section class="newUser">
+            <label id="lblNplayer"> CHOOSE PLAYER</label>
+            <img id="playerBc" src='./playerBlue.png' height="20px">
+            <img id="playerRc" src='./playerR.png' height="20px">
+            <img id="playerGc" src='./playerG.png' height="20px">
+            <img id="playerYc" src='./playerY.png' height="20px">
+
+
+        </section>
+    </div>
+    <div>
+        <canvas id="diceCanvas" width="50" height="50" style="border: none;">
+            Your browser does not support the HTML5 canvas tag.
+        </canvas>
+        <section class="newGame">
+            <label id="lbld"> diceNumber </label>
+        </section>
+        <section class="btncls"> 
+            <button id="btn">Move</button>
+            <img id="snakeundladder" src='./snakeundladder.jpg' style="display: none;">
+        </section>
+    </div>
+    </body>
 
 </html>
