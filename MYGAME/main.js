@@ -1,17 +1,24 @@
 import { tunnels } from "./dataOfCells.js";
 class GAME {}
 class player {
-  constructor(col, row, ctx, imgStr,clr) {
+  constructor(col, row, ctx, imgStr, clr) {
     this.ctx = ctx;
     this.col = col;
     this.row = row;
     this.direction = "R";
     this.status = "notInPlay";
-    this.type=clr;
+    this.type = clr;
+    this.color = "red";
+    if (clr.endsWith("B")) this.color = "blue";
+    if (clr.endsWith("G")) this.color = "green";
+    if (clr.endsWith("Y")) this.color = "yellow";
+    if (clr.endsWith("R")) this.color = "red";
+    //type:playerB,playerY,playerR,playerG
     //status:notInPlay/waiting/playing
   }
   draw() {
-    this.ctx.drawImage(this.img, this.col, this.row, 30, 30);
+    if (this.status == "playing")
+      this.ctx.drawImage(this.img, this.col, this.row, 30, 30);
   }
   canMove(chance) {
     console.log("row", this.row, "col:", this.col, chance);
@@ -77,7 +84,8 @@ class player {
     document.getElementById(p).setAttribute("style", "display: compact;");
     this.status = "waiting";
   }
-  start(imgPlayer,p) {
+  start(imgPlayer, p) {
+    this.status = "playing";
     document.getElementById(p).setAttribute("style", "display: none;");
     var img = new Image();
     img.style.display = "none";
@@ -87,14 +95,26 @@ class player {
     img.onload = () => {
       this.img = img;
       this.draw();
-      this.status = "playing";
     };
+  }
+  iskilled() {
+    document
+      .getElementById(this.type)
+      .setAttribute("style", "display: compact;");
+    this.status = "waiting";
+    this.col = 8;
+    this.row = 459;
   }
 }
 
 var drawGrid = function (w, h, ctx) {
   var ctx;
   var img = document.getElementById("snakeundladder");
+  if (!img.complete) {
+    img.onload = () => {
+      drawGrid(w, h, ctx);
+    };
+  }
   ctx.canvas.width = w;
   ctx.canvas.height = h;
   ctx.drawImage(img, 0, 0, w, h);
@@ -111,19 +131,62 @@ var drawGrid = function (w, h, ctx) {
 };
 class dice {
   constructor() {
-    this.ctx = document.getElementById("diceCanvas").getContext("2d");
-    var img = new Image();
-    img.style.display = "none";
-    img.src = "dice.png";
-    this.img = img;
-    document.body.appendChild(img);
-    img.onload = () => {
-      this.img = img;
-      this.drawDice();
-    };
+    this.platformElement = document.getElementById("platform");
+    this.diceElement = document.getElementById("dice");
+    this.diceResultElement = document.getElementById("result");
   }
-  setDice() {
+  setDice(player) {
+    this.diceResultElement.style.backgroundColor = player.color;
+    this.platformElement.classList.add("playing");
+    this.platformElement.classList.remove("stop");
+
     this.chance = Math.floor(Math.random() * 6 + 1);
+
+    setTimeout(() => {
+      this.platformElement.classList.add("stop");
+      this.platformElement.classList.remove("playing");
+      this.diceResultElement.innerText = this.chance;
+      var x = 0,
+        y = 20,
+        z = -20;
+      switch (this.chance) {
+        case 1:
+          x = 0;
+          y = 20;
+          z = -20;
+          break;
+        case 2:
+          x = -100;
+          y = -150;
+          z = 10;
+          break;
+        case 3:
+          x = 0;
+          y = -100;
+          z = -10;
+          break;
+        case 4:
+          x = 0;
+          y = 100;
+          z = -10;
+          break;
+        case 5:
+          x = 80;
+          y = 120;
+          z = -10;
+          break;
+        case 6:
+          x = 0;
+          y = 200;
+          x = 10;
+          break;
+      }
+
+      this.diceElement.style.transform =
+        "rotateX(" + x + "deg) rotateY(" + y + "deg) rotateZ(" + z + "deg)";
+      this.platformElement.style.transform = "translate3d(0,0, 0px)";
+    }, 1000);
+
     return this.chance;
   }
   drawDice() {
@@ -136,33 +199,58 @@ window.addEventListener("DOMContentLoaded", () => {
   drawGrid(500, 500, ctx);
   const dice1 = new dice();
   let MoveSteps = 0;
-  let players=[]
-  //  player[0] = new player(8, 459, ctx, "playerx.png");
-  //  player[1] = new player(8, 459, ctx, "playerx.png");
-  //  player[2] = new player(8, 459, ctx, "playerx.png");
-  //  player[3] = new player(8, 459, ctx, "playerx.png");
-
+  let players = [];
   document.getElementById("playerBc").addEventListener("click", () => {
-   let x=new player(8, 459, ctx, "playerB.png","playerB")
+    let x = new player(8, 459, ctx, "playerB.png", "playerB");
     x.choose("playerB");
-    players.push(x)
+    players.push(x);
   });
   document.getElementById("playerYc").addEventListener("click", () => {
-    let x=new player(8, 459, ctx, "playerY.png","playerY")
+    let x = new player(8, 459, ctx, "playerY.png", "playerY");
     x.choose("playerY");
-    players.push(x)  
+    players.push(x);
   });
-  function getPlayer(){
-     let x =players.shift();
-     players.push(x);
-     return(x)
-
+  document.getElementById("playerGc").addEventListener("click", () => {
+    let x = new player(8, 459, ctx, "playerG.png", "playerG");
+    x.choose("playerG");
+    players.push(x);
+    });
+    document.getElementById("playerRc").addEventListener("click", () => {
+      let x = new player(8, 459, ctx, "playerR.png", "playerR");
+      x.choose("playerR");
+      players.push(x);
+      });
+  function getPlayer() {
+    let x = players.shift();
+    players.push(x);
+    return x;
   }
-    document.getElementById("btn").addEventListener("click", () => {
-      let currentPlayer=getPlayer(); 
-      MoveSteps = dice1.setDice();
+  function gift() {
+    let x = players.pop();
+    players.unshift(x);
+  }
+  function findCollision(currentPlayer) {
+    let killedPlayer = players.filter(
+      (p) =>
+        p.col == currentPlayer.col &&
+        p.row == currentPlayer.row &&
+        p.type !== currentPlayer.type
+    );
+    {
+      if (killedPlayer[0] !== undefined) {
+        killedPlayer[0].iskilled();
+        alert(killedPlayer[0].type + "iskilled");
+      }
+    }
+  }
+  document.getElementById("platform").addEventListener("click", () => {
+    let currentPlayer = getPlayer();
+    MoveSteps = dice1.setDice(currentPlayer);
+    MoveSteps = document.getElementById("inpt").value || MoveSteps;
+    setTimeout(() => {
       if (currentPlayer.status == "playing") {
-        document.getElementById("lbld").innerHTML = MoveSteps+currentPlayer.type;
+        document.getElementById("lbld").innerHTML =
+            currentPlayer.type +":" + MoveSteps;
         if (currentPlayer.canMove(MoveSteps)) {
           for (let i = 1; i <= MoveSteps; i++) {
             currentPlayer.move();
@@ -170,23 +258,29 @@ window.addEventListener("DOMContentLoaded", () => {
         }
         currentPlayer.moveTunel();
         drawGrid(500, 500, ctx);
-       players.forEach(p=>p.draw())
+        findCollision(currentPlayer);
+        players.forEach((p) => p.draw());
         //currentPlayer.draw();
         if (currentPlayer.checkWin()) {
           alert(`player${currentPlayer.type}**DU HAST GEWONNEN`);
         }
       } else if (MoveSteps != 6 && currentPlayer.status == "waiting") {
-        document.getElementById("lbld").innerHTML = "GEDULD SEIN , You have " + MoveSteps+ MoveSteps+currentPlayer.type;
+        document.getElementById("lbld").innerHTML =
+          "Sorry! you can not start. Wait for 6 ";
       } else if (MoveSteps == 6 && currentPlayer.status == "waiting") {
-        document.getElementById("lbld").innerHTML = "Congarajulation !!!, You have !!start " + MoveSteps+currentPlayer.type;
-        currentPlayer.start(currentPlayer.type+".png",currentPlayer.type);
+        document.getElementById("lbld").innerHTML =
+          "Congarajulation !!!, start moving, being careful for snakes and use ladders!" +
+          MoveSteps +
+          currentPlayer.type;
+        currentPlayer.start(currentPlayer.type + ".png", currentPlayer.type);
       }
-    });
-    
-  
-  
-
-  document.getElementById("playerGc").addEventListener("click", () => {
-    // start("playerG")
+      if (MoveSteps == 6) {
+        gift();
+      }
+      dice1.diceResultElement.color = players[0].color;
+      dice1.diceResultElement.innerText = "-";
+    }, 1000);
   });
+
+  
 });
