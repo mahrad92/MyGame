@@ -20,12 +20,12 @@
   align-items: center;
   font-size: x-large;
   font-family: fantasy;
-
 }
 
-#result {
+#result,
+.result {
   text-align: center;
-  background-color: red;
+  background-color: white;
   color: white;
   border-radius: 8px;
   padding: 5px;

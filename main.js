@@ -214,12 +214,12 @@ window.addEventListener("DOMContentLoaded", () => {
     let x = new player(8, 459, ctx, "playerG.png", "playerG");
     x.choose("playerG");
     players.push(x);
-    });
-    document.getElementById("playerRc").addEventListener("click", () => {
-      let x = new player(8, 459, ctx, "playerR.png", "playerR");
-      x.choose("playerR");
-      players.push(x);
-      });
+  });
+  document.getElementById("playerRc").addEventListener("click", () => {
+    let x = new player(8, 459, ctx, "playerR.png", "playerR");
+    x.choose("playerR");
+    players.push(x);
+  });
   function getPlayer() {
     let x = players.shift();
     players.push(x);
@@ -250,7 +250,7 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       if (currentPlayer.status == "playing") {
         document.getElementById("lbld").innerHTML =
-            currentPlayer.type +":" + MoveSteps;
+          currentPlayer.type + " moved " + MoveSteps + "steps!";
         if (currentPlayer.canMove(MoveSteps)) {
           for (let i = 1; i <= MoveSteps; i++) {
             currentPlayer.move();
@@ -262,25 +262,23 @@ window.addEventListener("DOMContentLoaded", () => {
         players.forEach((p) => p.draw());
         //currentPlayer.draw();
         if (currentPlayer.checkWin()) {
-          alert(`player${currentPlayer.type}**DU HAST GEWONNEN`);
+          alert(`player${currentPlayer.type} **DU HAST GEWONNEN`);
         }
       } else if (MoveSteps != 6 && currentPlayer.status == "waiting") {
         document.getElementById("lbld").innerHTML =
-          "Sorry! you can not start. Wait for 6 ";
+          "Sorry " + currentPlayer.type + "! you can not start. Wait for 6 ";
       } else if (MoveSteps == 6 && currentPlayer.status == "waiting") {
         document.getElementById("lbld").innerHTML =
-          "Congarajulation !!!, start moving, being careful for snakes and use ladders!" +
-          MoveSteps +
-          currentPlayer.type;
+          "Congarajulation " +
+          currentPlayer.type +
+          "!!!, start moving, being careful for snakes and use ladders!";
         currentPlayer.start(currentPlayer.type + ".png", currentPlayer.type);
       }
       if (MoveSteps == 6) {
         gift();
       }
-      dice1.diceResultElement.color = players[0].color;
-      dice1.diceResultElement.innerText = "-";
+      document.getElementById("next-player").style.backgroundColor =
+        players[0].color;
     }, 1000);
   });
-
-  
 });
